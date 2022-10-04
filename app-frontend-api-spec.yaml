@@ -1,0 +1,438 @@
+openapi: "3.0.2"
+info:
+  title: Test GeoHash Location App - Frontend API Specs
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /search:
+    get:
+      summary: |
+        Return a list of business Ids base on the 
+        given longitude and latidute or an address.
+        The search parameter must have either
+        Longitude and Latitude or a address but
+        not a mix.
+      operationId: search
+      parameters:
+        - name: lat
+          in: query
+          description: The latidute of the location around which we want to search
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: long
+          in: query
+          description: The longitude of the location around which we want to search
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: address
+          in: query
+          description: The address of the location around which we want to search
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+        "400":
+          description: Invalid user input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+
+  /hash:
+    get:
+      summary: |
+        This service creates a geohash of the location (longitude and
+        latidute). Then it returns the geohash as well as the 8 adjecent
+        geohashes
+      operationId: search
+      parameters:
+        - name: lat
+          in: query
+          description: The latidute of the location
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: long
+          in: query
+          description: The longitude of the location
+          required: false
+          schema:
+            type: number
+            format: float
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hash:
+                    type: string
+                  adjecent:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        hash:
+                          type: string
+                        direction:
+                          type: string
+        "400":
+          description: Invalid user input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+
+  /geoencode:
+    get:
+      summary: |
+        Get the longitude and latidute of the address
+      operationId: geoencode
+      parameters:
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lat:
+                    type: number
+                    format: float
+                  long:
+                    type: number
+                    format: float
+        "400":
+          description: Invalid user input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+
+  /location:
+    get:
+      summary: Get the list of locations in the data base
+      operationId: getBusinessList
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LocationDetail"
+
+        "400":
+          description: Invalid user input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+    post:
+      summary: Get the list of location details based on the list of ids provided
+      operationId: fetchBusinessList
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: List of business ids we want to fetch from the database
+                  type: array
+                  items:
+                    type: string
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LocationDetail"
+
+        "400":
+          description: Invalid user input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+
+
+  /location/create:
+    post:
+      summary: |
+        This request will add a new location to the database. The 
+        request must be idiompotent. This means that for a given location,
+        name and address there can only be one entry
+      operationId: createLocation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - location
+              properties:
+                name:
+                  type: string
+                location:
+                  type: object
+                  description: |
+                    If all three are provided lat and long take precedence and address is 
+                    ignored
+                  properties:
+                    address:
+                      type: string
+                    lat:
+                      type: number
+                      format: float
+                    long:
+                      type: number
+                      format: float
+                rating:
+                  type: number
+                  format: float
+                website:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LocationDetail"
+        "400":
+          description: Invalid user input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+    
+
+  /location/{id}:
+    get:
+      summary: Get the location details bases on the id provided
+      operationId: getLocation
+      parameters:
+        - name: id
+          description: |
+            The business id of location which will come back as a response
+            to the search request
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LocationDetail"
+        "400":
+          description: Invalid user input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+
+    put:
+      summary: Update the database for the given location id
+      operationId: updateLocation
+      parameters:
+        - name: id
+          description: The business id we want to update
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                rating:
+                  type: number
+                  format: float
+                website:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LocationDetail"
+        "400":
+          description: Invalid user input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+    delete:
+      summary: Delete the location
+      operationId: deleteLocation
+      parameters:
+        - name: id
+          description: The location id we want to delete
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid user input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+
+components:
+  schemas:
+    Location:
+      type: object
+      properties:
+        id:
+          description: Use this id to fetch business information
+          type: string
+        hash:
+          description: This is the location's geohash
+          type: string
+        name:
+          type: string
+        rating:
+          type: string
+    ServerError:
+      type: object
+      properties:
+        message:
+          type: string
+        stackTrace:
+          type: string
+          description: |
+            A json string which give the stack trace error. This
+            is valid only for apis in test
+    UserError:
+      type: object
+      properties:
+        message:
+          type: string
+        stackTrace:
+          type: string
+          description: |
+            A json string which give the stack trace error. This
+            is valid only for apis in test
+    LocationDetail:
+      type: object
+      required:
+        - id
+        - location
+        - name
+      properties:
+        id:
+          type: string
+        location:
+          type: object
+          properties:
+            address:
+              type: string
+            lat:
+              type: number
+              format: float
+            long:
+              type: number
+              format: float
+        name:
+          type: string
+        rating:
+          type: number
+          format: float
+        website:
+          type: string
