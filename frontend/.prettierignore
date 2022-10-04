@@ -1,0 +1,9 @@
+# Ignore artifacts:
+build
+coverage
+.next
+assets
+
+
+# Ignore all HTML files:
+*.html

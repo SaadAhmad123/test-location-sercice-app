@@ -112,7 +112,9 @@ paths:
   /geoencode:
     get:
       summary: |
-        Get the longitude and latidute of the address
+        Get the longitude and latidute of the address or vice-a-versa.
+        If address is provided then longitude and latitude are returned
+        and if lat and long are provided address is returned
       operationId: geoencode
       parameters:
         - name: address
@@ -120,6 +122,18 @@ paths:
           required: false
           schema:
             type: string
+        - name: lat
+          in: query
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: long
+          in: query
+          required: false
+          schema:
+            type: number
+            format: float
       responses:
         "200":
           description: OK
@@ -128,6 +142,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  address:
+                    type: string
                   lat:
                     type: number
                     format: float
@@ -212,7 +228,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ServerError"
 
-
   /location/create:
     post:
       summary: |
@@ -270,7 +285,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServerError"
-    
 
   /location/{id}:
     get:
