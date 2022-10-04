@@ -18,7 +18,7 @@ const SearchBar = ({ value, onChange, placeholder }: ISearchBar) => {
       <input
         onChange={(e) => onChange?.(e.target.value)}
         value={value}
-        className="placeholder:italic placeholder:text-slate-400 block bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
+        className="placeholder:italic placeholder:text-slate-400 block bg-white w-full border border-slate-300 rounded-full py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
         placeholder={placeholder || "Search for anything..."}
         type="text"
         name="search"
