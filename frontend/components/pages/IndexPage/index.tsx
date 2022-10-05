@@ -6,14 +6,16 @@ import SearchBar from "../../Inputs/SearchBar";
 import ThemedImage from "../../ThemedImage";
 import UseLocationButton from "./Buttons/UseLocation";
 import SearchButton from "./Buttons/Search";
-import Link from "next/link";
+import LocationService from "../../../API/Zoo/LocationService";
 
 
 const IndexPage = () => {
     const [search, setSearch] = useState("");
     const handleOnSearchChange = (value: string) => setSearch(value);
     const handleOnClickCurrentLocation = () => {};
-    const handleOnSearch = () => {}
+    const handleOnSearch = () => {
+        LocationService.getAddress(4,4)
+    }
     return (
         <Layout nav={false}>
             <Container className="flex md:items-center justify-center min-h-screen bg-no-repeat bg-cover">
