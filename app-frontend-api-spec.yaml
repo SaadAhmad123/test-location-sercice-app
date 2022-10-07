@@ -29,19 +29,15 @@ paths:
           schema:
             type: number
             format: float
-        - name: address
-          in: query
-          description: The address of the location around which we want to search
-          required: false
-          schema:
-            type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Location"
+                type: array
+                items:
+                  $ref: "#/components/schemas/Location"
         "400":
           description: Invalid user input
           content:
@@ -134,22 +130,43 @@ paths:
           schema:
             type: number
             format: float
+        - name: proximity_long
+          in: query
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: proximity_lat
+          in: query
+          required: false
+          schema:
+            type: number
+            format: float
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  address:
-                    type: string
-                  lat:
-                    type: number
-                    format: float
-                  long:
-                    type: number
-                    format: float
+                type: array
+                items:
+                  type: object
+                  properties:
+                    confidence:
+                      type: number
+                      format: float
+                    formated:
+                      description: The address of the location
+                      type: string
+                    geometry:
+                      type: object
+                      properties:
+                        lat:
+                          type: number
+                          format: float
+                        lng:
+                          type: number
+                          format: float
         "400":
           description: Invalid user input
           content:
@@ -403,6 +420,15 @@ components:
           type: string
         rating:
           type: string
+        geometry:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: float
+            lng:
+              type: number
+              format: float
     ServerError:
       type: object
       properties:

@@ -1,8 +1,8 @@
-import {AppEnv, AppEnvironment} from "./AppEnvironmentManager";
+import { AppEnv, AppEnvironment } from "./AppEnvironmentManager";
 
 const safeConsole = () => {
-    if(AppEnvironment.is(AppEnv.PROD)) return undefined
-    return console
-}
+  if (AppEnvironment.is(AppEnv.PROD)) return undefined;
+  return console;
+};
 
-export default safeConsole
+export default safeConsole;

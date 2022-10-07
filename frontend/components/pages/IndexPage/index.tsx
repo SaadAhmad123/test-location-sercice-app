@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Layout from "../../Layout";
 import Container from "../../Container";
 import Separator from "../../Separator";
@@ -6,43 +6,18 @@ import SearchBar from "../../Inputs/SearchBar";
 import ThemedImage from "../../ThemedImage";
 import UseLocationButton from "./Buttons/UseLocation";
 import SearchButton from "./Buttons/Search";
-import LocationService from "../../../API/Zoo/LocationService";
-import getClientCurrentLocation from "../../../helpers/getClientCurrentLocation";
-import safeConsole from "../../../helpers/safeConsole";
-
+import useIndexPage from "./hooks/useIndexPage";
 
 const IndexPage = () => {
-  const [address, setAddress] = useState("");
-  const [coords, setCoords] = useState<GeolocationCoordinates | undefined>()
-  const [loadingCurrentAddress, setLoadingCurrentAddress] = useState(false)
-  const handleOnSearchChange = (value: string) => setAddress(value);
-  const handleOnClickCurrentLocation = async () => {
-    try {
-      setLoadingCurrentAddress(true)
-      const location = await getClientCurrentLocation()
-      let resp = await LocationService.getAddress(
-          location.coords.latitude,
-          location.coords.longitude
-      )
-      resp = resp.sort((a: any, b: any) => b.confidence - a.confidence)
-      setAddress(resp[0].formatted)
-      setCoords(location.coords)
-    }
-    catch (e) {
-      safeConsole()?.error(e)
-    }
-    finally {
-      setLoadingCurrentAddress(false)
-    }
-  };
-  const handleOnSearch = () => {
-    LocationService.getCoordinates(
-      "138 Spencer Street, Melbourne, VIC, Australia 3000"
-    ).then((e) => console.log({ e }));
-    LocationService.getAddress(-37.81, 144.9537046).then((d) =>
-      console.log({ d })
-    );
-  };
+  const {
+    error,
+    address,
+    loading,
+    handleOnSearchChange,
+    handleOnSearch,
+    handleOnClickCurrentLocation,
+  } = useIndexPage();
+
   return (
     <Layout nav={false}>
       <Container className="flex md:items-center justify-center min-h-screen bg-no-repeat bg-cover">
@@ -62,6 +37,7 @@ const IndexPage = () => {
             </div>
           </div>
           <Separator padding={8} />
+          <p className={`py-2 text-center text-red-400 text-sm`}>{error}</p>
           <SearchBar
             value={address}
             onChange={handleOnSearchChange}
@@ -69,9 +45,12 @@ const IndexPage = () => {
           />
           <Separator padding={8} />
           <div className={"justify-center flex"}>
-            <UseLocationButton onClick={handleOnClickCurrentLocation} loading={loadingCurrentAddress}/>
+            <UseLocationButton
+              onClick={handleOnClickCurrentLocation}
+              loading={loading.currentAddress}
+            />
             <Separator horizontal />
-            <SearchButton onClick={handleOnSearch} />
+            <SearchButton onClick={handleOnSearch} loading={loading.search} />
           </div>
           <Separator padding={8} />
           <div className="flex items-center justify-center">

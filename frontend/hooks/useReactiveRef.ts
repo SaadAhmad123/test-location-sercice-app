@@ -5,6 +5,8 @@ const useReactiveRef = <T>(
   onChange?: (newValue?: T, oldValue?: T) => void
 ) => {
   const ref = useRef<T>(initialValue);
+  const onChangeCallback =
+    useRef<(newValue?: T, oldValue?: T) => void | undefined>(onChange);
 
   const get = useCallback(() => {
     return ref.current;
@@ -14,12 +16,19 @@ const useReactiveRef = <T>(
     (value: T) => {
       const oldValue = ref.current;
       ref.current = value;
-      onChange?.(value, oldValue);
+      onChangeCallback.current?.(value, oldValue);
     },
     [ref]
   );
 
-  return { get, set };
+  const setOnChange = useCallback(
+    (cb: (newValue?: T, oldValue?: T) => void) => {
+      onChangeCallback.current = cb;
+    },
+    []
+  );
+
+  return { get, set, onChange: setOnChange };
 };
 
 export default useReactiveRef;

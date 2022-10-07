@@ -12,7 +12,10 @@ const Search = ({ onClick, loading }: ISearch) => {
   return (
     <button
       className="py-2 px-6 bg-blue-700 text-white rounded-full text-lg block hover:bg-blue-900 transition-all ease-in duration-100 flex items-center"
-      onClick={onClick}
+      onClick={() => {
+        if (loading) return;
+        onClick?.();
+      }}
     >
       <span className="mr-2 flex items-center">
         {loading ? (

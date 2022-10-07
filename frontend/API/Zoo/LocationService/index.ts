@@ -1,5 +1,7 @@
 import LocationAPI from "./directory";
 import apiConsole from "../../helpers/apiConsole";
+import getClientCurrentLocation from "../../../helpers/getClientCurrentLocation";
+import safeConsole from "../../../helpers/safeConsole";
 
 const LocationService = {
   getAddress: async (lat: number, long: number) => {
@@ -12,9 +14,19 @@ const LocationService = {
     return resp.data.results;
   },
   getCoordinates: async (address: string) => {
-    const resp = await LocationAPI.getCoordinates
+    let proximity: GeolocationPosition = undefined;
+    try {
+      proximity = await getClientCurrentLocation();
+    } catch (e) {
+      safeConsole()?.log(e);
+    }
+    let apiCall = LocationAPI.getCoordinates;
+    if (proximity) apiCall = LocationAPI.getCoordinatesWithProximity;
+    const resp = await apiCall
       .resolve({
         ":address": encodeURIComponent(address),
+        ":proximityLat": proximity.coords.latitude.toString(),
+        ":proximityLong": proximity.coords.longitude.toString(),
       })
       .request();
     return resp.data.results;

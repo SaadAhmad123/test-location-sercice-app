@@ -11,7 +11,10 @@ interface IUseLocation {
 const UseLocation = ({ onClick, loading }: IUseLocation) => {
   return (
     <button
-      onClick={onClick}
+      onClick={() => {
+        if (loading) return;
+        onClick?.();
+      }}
       className="bg-blue-100 px-4 py-2 rounded-full text-gray-700 hover:bg-blue-200 transition-all ease-in duration-100 flex items-center"
     >
       <span className="mr-2 flex items-center">

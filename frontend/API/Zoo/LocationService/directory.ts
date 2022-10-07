@@ -18,6 +18,13 @@ const LocationAPI = {
       [AppEnv.DEV]: mockGetAddressOrCoordinates,
     }
   ),
+  getCoordinatesWithProximity: GeoHashApi.endpoint(
+    "/geoencode?address=:address&proximity_lat=:proximityLat&proximity_long=:proximityLong",
+    APIMethod.GET,
+    {
+      [AppEnv.DEV]: mockGetAddressOrCoordinates,
+    }
+  ),
 };
 
 export default LocationAPI;
