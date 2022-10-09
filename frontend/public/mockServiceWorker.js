@@ -118,7 +118,7 @@ self.addEventListener("fetch", function (event) {
     handleRequest(event, requestId).catch((error) => {
       if (error.name === "NetworkError") {
         console.warn(
-          '[MSW] Successfully emulated a network error for the "%s %s" request.',
+          '[MockApiService] Successfully emulated a network error for the "%s %s" request.',
           request.method,
           request.url
         );
@@ -142,7 +142,7 @@ async function handleRequest(event, requestId) {
   const response = await getResponse(event, client, requestId);
 
   // Send back the response clone for the "response:*" life-cycle events.
-  // Ensure MSW is active and ready to handle the message, otherwise
+  // Ensure MockApiService is active and ready to handle the message, otherwise
   // this message will pend indefinitely.
   if (client && activeClientIds.has(client.id)) {
     (async function () {
@@ -203,7 +203,7 @@ async function getResponse(event, client, requestId) {
     // (i.e. its body has been read and sent to the client).
     const headers = Object.fromEntries(clonedRequest.headers.entries());
 
-    // Remove MSW-specific request headers so the bypassed requests
+    // Remove MockApiService-specific request headers so the bypassed requests
     // comply with the server's CORS preflight check.
     // Operate with the headers as an object because request "Headers"
     // are immutable.
@@ -219,7 +219,7 @@ async function getResponse(event, client, requestId) {
 
   // Bypass initial page load requests (i.e. static assets).
   // The absence of the immediate/parent client in the map of the active clients
-  // means that MSW hasn't dispatched the "MOCK_ACTIVATE" event yet
+  // means that MockApiService hasn't dispatched the "MOCK_ACTIVATE" event yet
   // and is not ready to handle requests.
   if (!activeClientIds.has(client.id)) {
     return passthrough();

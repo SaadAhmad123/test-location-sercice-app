@@ -1,17 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { AppProps } from "next/app";
 import "../styles/index.css";
 import "../styles/globals.css";
 import { AppContextProvider } from "../AppContext";
-import useMockApiService from "../hooks/useMockApiService";
 import directories from "../API/Zoo/directories";
+import MockApiService from "../API/React/components/MockApiService";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  useMockApiService(directories);
   return (
-    <AppContextProvider>
-      <Component {...pageProps} />
-    </AppContextProvider>
+    <MockApiService directories={directories}>
+      <AppContextProvider>
+        <Component {...pageProps} />
+      </AppContextProvider>
+    </MockApiService>
   );
 }
 
