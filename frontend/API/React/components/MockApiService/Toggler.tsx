@@ -1,24 +1,29 @@
-import React, {useEffect, useRef, useState} from "react";
-import {localStorageConfig} from "./localStorage.config";
+import React, { useEffect, useRef, useState } from "react";
+import { localStorageConfig } from "./localStorage.config";
 
 const Toggler = () => {
-  const {KEY, TRUE, FALSE} = localStorageConfig
+  const { KEY, TRUE, FALSE } = localStorageConfig;
   const [mock, setMock] = useState(false);
   const mounted = useRef(false);
 
   useEffect(() => {
     if (mounted.current) return;
-    if (!window?.localStorage) return
-    mounted.current = true
-      const useMock = window?.localStorage?.getItem?.(KEY) === TRUE
-    setMock(useMock)
+    if (!window?.localStorage) return;
+    mounted.current = true;
+    const useMock = window?.localStorage?.getItem?.(KEY) === TRUE;
+    setMock(useMock);
   }, [mock, mounted]);
 
   const handleToggle = () => {
-      if (!window?.confirm("Is it okay to reload the page to configure the mock API service?")) return
-      window?.localStorage?.setItem(KEY, !mock ? TRUE: FALSE)
-      window?.location?.reload()
-  }
+    if (
+      !window?.confirm(
+        "Is it okay to reload the page to configure the mock API service?"
+      )
+    )
+      return;
+    window?.localStorage?.setItem(KEY, !mock ? TRUE : FALSE);
+    window?.location?.reload();
+  };
 
   return (
     <div
@@ -37,8 +42,8 @@ const Toggler = () => {
         borderTopRightRadius: "8px",
       }}
     >
-      <p onClick={handleToggle} style={{cursor: "pointer"}}>
-          <strong>{mock ? "STOP" : "START"}</strong> Mock API
+      <p onClick={handleToggle} style={{ cursor: "pointer" }}>
+        <strong>{mock ? "STOP" : "START"}</strong> Mock API
       </p>
     </div>
   );

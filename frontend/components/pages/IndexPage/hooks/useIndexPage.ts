@@ -61,7 +61,7 @@ const useIndexPage = () => {
       await router.push({
         pathname: "/search/[long+lat]",
         query: {
-          "long+lat": encodeURIComponent(
+          geoCoords: encodeURIComponent(
             `${_coords.longitude}+${_coords.latitude}`
           ),
         },

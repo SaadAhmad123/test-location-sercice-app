@@ -50,7 +50,7 @@ const useSearchByAddress = () => {
       if (initiated() !== SearchPageInitStates.UN_INITIATED) return;
       setInitiated(SearchPageInitStates.LOADING);
       setError(undefined);
-      const queryCoordinates = router.query?.["long+lat"];
+      const queryCoordinates = router.query?.["geoCoords"];
       let _coordinates = decodeURIData(queryCoordinates || "");
       if (!_coordinates || _coordinates?.length < 1) {
         setInitiated(SearchPageInitStates.UN_INITIATED);
